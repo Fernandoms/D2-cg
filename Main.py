@@ -22,7 +22,10 @@ def doIdle():
     pass  # Remove if we actually use this function
 
 def doMouse(*args):
-    print(args)
+    button = args[0]
+    state = args[1]
+    x = args[2]
+    y = args[3]
 
 def doMotion(*args):
     x = args[0]
