@@ -7,11 +7,17 @@ from OpenGL.GLUT import *
 
 global mesh
 global meshes
-global cameraMatrix
+g_width = 640
+g_height = 480
 
 scaleFactor = 1.30
 rotateFactor = 0.05
 translateFactor = 0.05
+rotationX = 0
+rotationY = 0
+dist = 4.0
+last_x = 0.0
+last_y = 0.0
 
 file_showing = 0
 files = ["cow", "budda", "dragon", "bunny", "snowman"]
@@ -21,16 +27,37 @@ files = ["cow", "budda", "dragon", "bunny", "snowman"]
 def doIdle():
     pass  # Remove if we actually use this function
 
+
 def doMouse(*args):
+    global dist, last_y, last_x
     button = args[0]
     state = args[1]
     x = args[2]
     y = args[3]
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+        last_x = x
+        last_y = y
+    if button == 3:
+        if dist > 0.1:
+            dist = dist - 0.1
+            doRedraw()
+    if button == 4:
+        if dist < 20:
+            dist = dist + 0.1
+            doRedraw()
+
 
 def doMotion(*args):
+    global last_x, last_y, rotationY, rotationX
     x = args[0]
     y = args[1]
 
+    rotationY = rotationY + float(y - last_y)
+    rotationX = rotationX + float(x - last_x)
+    last_x = x
+    last_y = y
+
+    doRedraw()
 
 
 def doKeyboard(*args):
@@ -52,9 +79,7 @@ def doKeyboard(*args):
     doRedraw()
 
 
-
 def doSpecial(*args):
-    print(args[0])
     global cameraMatrix
     if glutGetModifiers() & GLUT_ACTIVE_SHIFT:
         if args[0] == GLUT_KEY_UP:
@@ -79,26 +104,24 @@ def doSpecial(*args):
 
 # Called by glutMainLoop() when window is resized
 def doReshape(width, height):
-    global cameraMatrix
+    global g_width, g_height
+    g_width = width
+    g_height = height
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     glViewport(0, 0, width, height)
-    gluPerspective(45.0, ((float)(width)) / height, .1, 200)
+    gluPerspective(100, ((float)(width)) / height, 1, 20)
 
     doCamera()
 
 
 def doCamera():
-    glMatrixMode(GL_MODELVIEW)
+    global dist
+    glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-
-    orientationMatrix = cameraMatrix.copy()
-    orientationMatrix[3] = matrices.Vector4d(0, 0, 0, 1)
-    pos = matrices.Vector4d(0, 3, 10, 1) * cameraMatrix
-    lookAt = matrices.Vector4d(0, 0, 0, 1) * cameraMatrix
-    direction = matrices.Vector4d(0, 1, 0, 1) * orientationMatrix
-
-    gluLookAt(*(pos.list()[:-1] + lookAt.list()[:-1] + direction.list()[:-1]))
+    gluPerspective(100, (float(g_width)) / g_height, .1, 200)
+    x, y = mesh.get_center()
+    gluLookAt(x, y, dist, x, y, 0.0, 0.0, 1.0, 0.0)
 
 
 # Called by glutMainLoop() when screen needs to be redrawn
@@ -112,44 +135,43 @@ def doRedraw():
     glMaterial(GL_FRONT_AND_BACK, GL_SHININESS, (128.0,))
     glMatrixMode(GL_MODELVIEW)
 
-    mesh.draw()
+    glLoadIdentity()
+    glRotatef(rotationY, 1.0, 0.0, 0.0)
+    glRotatef(rotationX, 0.0, 1.0, 0.0)
 
+    mesh.draw()
     glutSwapBuffers()  # Draws the new image to the screen if using double buffers
 
+
 def readPlys():
+    global meshes
     meshes = []
-    for i in range(0,5):
+    for i in range(0, 5):
         meshes.append(ReadPly.parse_ply(files[i] + ".ply"))
 
     return meshes
 
 
 if __name__ == '__main__':
-    cameraMatrix = matrices.getIdentity4x4()
     meshes = readPlys()
     mesh = meshes[file_showing]
 
     # Basic initialization - the same for most apps
     glutInit([])
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
-    glutInitWindowSize(640, 480)
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH)
+    glutInitWindowSize(g_width, g_height)
     glutCreateWindow("Simple OpenGL Renderer")
-    glEnable(GL_DEPTH_TEST)  # Ensure farthest polygons render first
-    glEnable(GL_NORMALIZE)  # Prevents scale from affecting color
     glClearColor(0.1, 0.1, 0.2, 0.0)  # Color to apply for glClear()
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_CULL_FACE)
 
     # Set up two lights
     glEnable(GL_LIGHTING)
     BRIGHT4f = (1.0, 1.0, 1.0, 1.0)  # Color for Bright light
-    DIM4f = (.2, .2, .2, 1.0)  # Color for Dim light
     glLightfv(GL_LIGHT0, GL_AMBIENT, BRIGHT4f)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, BRIGHT4f)
     glLightfv(GL_LIGHT0, GL_POSITION, (10, 10, 10, 0))
     glEnable(GL_LIGHT0)
-    glLightfv(GL_LIGHT1, GL_AMBIENT, DIM4f)
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, DIM4f)
-    glLightfv(GL_LIGHT1, GL_POSITION, (-10, 10, -10, 0))
-    glEnable(GL_LIGHT1)
 
     # Callback functions for loop
     glutDisplayFunc(doRedraw)  # Runs when the screen must be redrawn

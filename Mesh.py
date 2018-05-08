@@ -16,6 +16,10 @@ class Vertex(object):
     def set_z(self, z):
         self.z = z
 
+    def get_z(self):
+        return self.z
+
+
     def coords(self):
         return self.x, self.y, self.z
 
@@ -41,6 +45,10 @@ class Mesh(object):
         self.faces = []
         self.numVertices = 0
         self.numFaces = 0
+        self.max_x = 0.0
+        self.min_x = 0.0
+        self.min_y = 0.0
+        self.max_y = 0.0
 
     def addVertex(self, v):
         self.vertices.append(v)
@@ -56,6 +64,29 @@ class Mesh(object):
 
     def setNumFaces(self, f):
         self.numFaces = f
+
+    def check_x(self, x):
+        if self.max_x < x:
+            self.max_x = x
+        if self.min_x > x:
+            self.min_x = x
+
+    def check_y(self, y):
+        if self.max_y < y:
+            self.max_y = y
+        if self.min_y > y:
+            self.min_y = y
+
+    def get_center(self):
+        x_center = (self.min_x + self.max_x) /2
+        y_center = (self.min_y + self.max_y) / 2
+
+        return x_center, y_center
+
+    def dist(self):
+        return (abs(self.min_x) + abs(self.max_x))
+
+
 
     def draw(self, isWireframe=False):
         mode = None

@@ -24,6 +24,8 @@ def parse_ply(fname):
                 v.set_x(float(aux[0]))
                 v.set_y(float(aux[1]))
                 v.set_z(float(aux[2]))
+                m.check_x(float(aux[0]))
+                m.check_y(float(aux[1]))
                 m.addVertex(v)
                 countVertex += 1
             elif countFaces < m.numFaces:
