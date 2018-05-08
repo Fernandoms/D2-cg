@@ -1,5 +1,4 @@
 import ReadPly
-import Matrix as matrices
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -23,9 +22,8 @@ file_showing = 0
 files = ["cow", "budda", "dragon", "bunny", "snowman"]
 
 
-# Gets called by glutMainLoop() many times per second
-def doIdle():
-    pass  # Remove if we actually use this function
+def change_title():
+    glutSetWindowTitle(files[file_showing] + ' - ' + str(mesh.numFaces) + ' Triangulos')
 
 
 def doMouse(*args):
@@ -61,48 +59,29 @@ def doMotion(*args):
 
 
 def doKeyboard(*args):
-    global mesh
+    global mesh, dist
     global file_showing
-    global cameraMatrix
-    if args[0] == b'+':
-        cameraMatrix = cameraMatrix * matrices.scale(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor)
-    elif args[0] == b'-':
-        cameraMatrix = cameraMatrix * matrices.scale(scaleFactor, scaleFactor, scaleFactor)
-    elif args[0] == b'd':
-        file_showing = (file_showing + 1) % 5
-        mesh = meshes[file_showing]
-    elif args[0] == b'a':
-        file_showing = (file_showing - 1) % 5
-        mesh = meshes[file_showing]
-    else:
-        return
-    doRedraw()
+
+    # doRedraw()
 
 
 def doSpecial(*args):
-    global cameraMatrix
-    if glutGetModifiers() & GLUT_ACTIVE_SHIFT:
-        if args[0] == GLUT_KEY_UP:
-            cameraMatrix = cameraMatrix * matrices.translate(0, -translateFactor, 0)  # up
-        if args[0] == GLUT_KEY_DOWN:
-            cameraMatrix = cameraMatrix * matrices.translate(0, translateFactor, 0)  # down
-        if args[0] == GLUT_KEY_LEFT:
-            cameraMatrix = cameraMatrix * matrices.translate(translateFactor, 0, 0)  # left
-        if args[0] == GLUT_KEY_RIGHT:
-            cameraMatrix = cameraMatrix * matrices.translate(-translateFactor, 0, 0)  # right
-    else:
-        if args[0] == GLUT_KEY_UP:
-            cameraMatrix = cameraMatrix * matrices.rotateX(-rotateFactor)  # up
-        if args[0] == GLUT_KEY_DOWN:
-            cameraMatrix = cameraMatrix * matrices.rotateX(rotateFactor)  # down
-        if args[0] == GLUT_KEY_LEFT:
-            cameraMatrix = cameraMatrix * matrices.rotateY(-rotateFactor)  # left
-        if args[0] == GLUT_KEY_RIGHT:
-            cameraMatrix = cameraMatrix * matrices.rotateY(rotateFactor)  # right
+    global file_showing, dist, mesh
+    if args[0] == GLUT_KEY_LEFT:
+        file_showing = (file_showing - 1) % 5
+        mesh = meshes[file_showing]
+        dist = mesh.dist()
+    if args[0] == GLUT_KEY_RIGHT:
+        file_showing = (file_showing + 1) % 5
+        mesh = meshes[file_showing]
+        dist = mesh.dist()
+
     doRedraw()
 
 
 # Called by glutMainLoop() when window is resized
+
+
 def doReshape(width, height):
     global g_width, g_height
     g_width = width
@@ -125,6 +104,8 @@ def doCamera():
 
 
 # Called by glutMainLoop() when screen needs to be redrawn
+
+
 def doRedraw():
     doCamera()
 
@@ -140,6 +121,7 @@ def doRedraw():
     glRotatef(rotationX, 0.0, 1.0, 0.0)
 
     mesh.draw()
+    change_title()
     glutSwapBuffers()  # Draws the new image to the screen if using double buffers
 
 
@@ -164,7 +146,7 @@ if __name__ == '__main__':
     glClearColor(0.1, 0.1, 0.2, 0.0)  # Color to apply for glClear()
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_CULL_FACE)
-
+    change_title()
     # Set up two lights
     glEnable(GL_LIGHTING)
     BRIGHT4f = (1.0, 1.0, 1.0, 1.0)  # Color for Bright light
@@ -175,7 +157,7 @@ if __name__ == '__main__':
 
     # Callback functions for loop
     glutDisplayFunc(doRedraw)  # Runs when the screen must be redrawn
-    glutIdleFunc(doIdle)  # Runs in a loop when the screen is not redrawn
+    # glutIdleFunc(doIdle)  # Runs in a loop when the screen is not redrawn
     glutReshapeFunc(doReshape)  # Runs when the window is resized
     glutSpecialFunc(doSpecial)  # Runs when directional key is pressed
     glutKeyboardFunc(doKeyboard)  # Runs when key is pressed

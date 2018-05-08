@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 import math
 
+
 class Vertex(object):
     def __init__(self):
         self.x = 0.0
@@ -18,7 +19,6 @@ class Vertex(object):
 
     def get_z(self):
         return self.z
-
 
     def coords(self):
         return self.x, self.y, self.z
@@ -40,6 +40,7 @@ class Face(object):
 
 class Mesh(object):
     primitiva = [GL_TRIANGLES, GL_LINE_LOOP]
+
     def __init__(self):
         self.vertices = []
         self.faces = []
@@ -78,15 +79,13 @@ class Mesh(object):
             self.min_y = y
 
     def get_center(self):
-        x_center = (self.min_x + self.max_x) /2
+        x_center = (self.min_x + self.max_x) / 2
         y_center = (self.min_y + self.max_y) / 2
 
         return x_center, y_center
 
     def dist(self):
-        return (abs(self.min_x) + abs(self.max_x))
-
-
+        return (abs(self.min_x) + abs(self.max_x)) * 1.1
 
     def draw(self, isWireframe=False):
         mode = None
@@ -122,7 +121,6 @@ class Mesh(object):
                 mode = None
         if mode:
             glEnd()
-
 
     def calculateNormal(self, face):
         v1 = Vertex()
