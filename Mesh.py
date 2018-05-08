@@ -85,7 +85,10 @@ class Mesh(object):
         return x_center, y_center
 
     def dist(self):
-        return (abs(self.min_x) + abs(self.max_x)) * 1.1
+        if (abs(self.min_x) + abs(self.max_x)) > (abs(self.min_y) + abs(self.max_y)):
+            return abs(self.min_x) + abs(self.max_x)
+        else:
+            return abs(self.min_y) + abs(self.max_y)
 
     def draw(self, isWireframe=False):
         mode = None
