@@ -1,3 +1,2 @@
 PyOpenGL==3.1.0
 PyOpenGL-accelerate==3.1.0
-PyOpenGL-Demo==3.0.0
