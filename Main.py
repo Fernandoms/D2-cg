@@ -115,6 +115,14 @@ def doCamera():
     x, y = mesh.get_center()
     gluLookAt(x, y, dist, x, y, 0.0, 0.0, 1.0, 0.0)
 
+    # Set up light
+    glEnable(GL_LIGHTING)
+    BRIGHT4f = (1.0, 1.0, 1.0, 1.0)  # Color for Bright light
+    glLightfv(GL_LIGHT0, GL_AMBIENT, BRIGHT4f)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, BRIGHT4f)
+    glLightfv(GL_LIGHT0, GL_POSITION, (x, y, dist, 0))
+    glEnable(GL_LIGHT0)
+
 
 # Called by glutMainLoop() when screen needs to be redrawn
 
@@ -161,7 +169,7 @@ if __name__ == '__main__':
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_CULL_FACE)
     change_title()
-    # Set up two lights
+    # Set up light
     glEnable(GL_LIGHTING)
     BRIGHT4f = (1.0, 1.0, 1.0, 1.0)  # Color for Bright light
     glLightfv(GL_LIGHT0, GL_AMBIENT, BRIGHT4f)
