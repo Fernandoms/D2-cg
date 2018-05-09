@@ -8,6 +8,7 @@ global mesh
 global meshes
 g_width = 640
 g_height = 480
+fullScreen = False
 
 scaleFactor = 1.30
 rotateFactor = 0.05
@@ -59,8 +60,16 @@ def doMotion(*args):
 
 
 def doKeyboard(*args):
-    global mesh, dist
+    print(args)
+    global mesh, dist, fullScreen
     global file_showing
+    if args[0] == b'f':
+        fullScreen = not fullScreen
+        if fullScreen:
+            glutFullScreen()
+        else:
+            glutReshapeWindow(800, 450)
+            glutInitWindowPosition(100, 100)
 
     # doRedraw()
 
