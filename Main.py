@@ -1,4 +1,5 @@
 import ReadPly
+from Mesh import Materials
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -9,6 +10,8 @@ global meshes
 g_width = 640
 g_height = 480
 fullScreen = False
+isWireframe = False
+materials = Materials()
 
 scaleFactor = 1.30
 rotateFactor = 0.05
@@ -60,8 +63,7 @@ def doMotion(*args):
 
 
 def doKeyboard(*args):
-    print(args)
-    global mesh, dist, fullScreen
+    global mesh, dist, fullScreen, isWireframe
     global file_showing
     if args[0] == b'f':
         fullScreen = not fullScreen
@@ -70,6 +72,8 @@ def doKeyboard(*args):
         else:
             glutReshapeWindow(800, 450)
             glutInitWindowPosition(100, 100)
+    if args[0] == b'w':
+        isWireframe = not isWireframe
 
     # doRedraw()
 
@@ -120,16 +124,17 @@ def doRedraw():
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    glMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, (.25, .25, .25, 1.0))
-    glMaterial(GL_FRONT_AND_BACK, GL_SPECULAR, (1.0, 1.0, 1.0, .5))
-    glMaterial(GL_FRONT_AND_BACK, GL_SHININESS, (128.0,))
+    glMaterial(GL_FRONT, GL_AMBIENT, materials.component_materials[file_showing].ambient)
+    glMaterial(GL_FRONT, GL_DIFFUSE, materials.component_materials[file_showing].diffuse)
+    glMaterial(GL_FRONT, GL_SPECULAR, materials.component_materials[file_showing].specular)
+    glMaterial(GL_FRONT, GL_SHININESS, materials.component_materials[file_showing].shininess)
     glMatrixMode(GL_MODELVIEW)
 
     glLoadIdentity()
     glRotatef(rotationY, 1.0, 0.0, 0.0)
     glRotatef(rotationX, 0.0, 1.0, 0.0)
 
-    mesh.draw()
+    mesh.draw(isWireframe)
     change_title()
     glutSwapBuffers()  # Draws the new image to the screen if using double buffers
 

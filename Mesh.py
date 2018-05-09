@@ -1,6 +1,39 @@
 from OpenGL.GL import *
 import math
 
+materials = [
+    [  # Black Plastic
+        (0.000000, 0.000000, 0.000000, 1.000000),  # ambient
+        (0.010000, 0.010000, 0.010000, 1.000000),  # diffuse
+        (0.500000, 0.500000, 0.500000, 1.000000),  # specular
+        32  # shininess
+    ],
+    [  # Black Plastic
+        (0.000000, 0.000000, 0.000000, 1.000000),  # ambient
+        (0.010000, 0.010000, 0.010000, 1.000000),  # diffuse
+        (0.500000, 0.500000, 0.500000, 1.000000),  # specular
+        32  # shininess
+    ],
+    [  # Black Plastic
+        (0.000000, 0.000000, 0.000000, 1.000000),  # ambient
+        (0.010000, 0.010000, 0.010000, 1.000000),  # diffuse
+        (0.500000, 0.500000, 0.500000, 1.000000),  # specular
+        32  # shininess
+    ],
+    [  # Black Plastic
+        (0.000000, 0.000000, 0.000000, 1.000000),  # ambient
+        (0.010000, 0.010000, 0.010000, 1.000000),  # diffuse
+        (0.500000, 0.500000, 0.500000, 1.000000),  # specular
+        32  # shininess
+    ],
+    [  # Black Plastic
+        (0.000000, 0.000000, 0.000000, 1.000000),  # ambient
+        (0.010000, 0.010000, 0.010000, 1.000000),  # diffuse
+        (0.500000, 0.500000, 0.500000, 1.000000),  # specular
+        30  # shininess
+    ]
+]
+
 
 class Vertex(object):
     def __init__(self):
@@ -153,3 +186,28 @@ class Mesh(object):
         vn.set_z(vn.z / len)
 
         return vn
+
+
+class Material:
+    def __init__(self, *args):
+        self.ambient = args[0][0]
+        self.diffuse = args[0][1]
+        self.specular = args[0][2]
+        self.shininess = args[0][3]
+
+class Materials:
+    def __init__(self):
+        self.component_materials = Materials.set_materials()
+
+    @staticmethod
+    def set_materials():
+        aux = []
+        for i in materials:
+            aux.append(Material(i))
+        return aux
+
+
+if __name__ == '__main__':
+    m = Materials()
+    print(m.component_materials)
+
