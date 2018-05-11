@@ -1,6 +1,6 @@
 import ReadPly
 from Mesh import Materials
-
+import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
